@@ -29,7 +29,7 @@ Container Docker disponible ici :
 
 Pour lancer les container en local : 
 
-docker pull lornmalvo/"name"
+**docker pull lornmalvo/"name"**
 
 <h2> Documentation de l'API </h2>
 
