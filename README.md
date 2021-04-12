@@ -36,7 +36,3 @@ Pour lancer les container en local :
 La documentation des endpoints a été générée avec Swagger :
 
 localhost:8080/swagger-ui.html
-
-<h2> Tests de performances de l'application </h2>
-
-La documentation est disponible -> ici <- 
