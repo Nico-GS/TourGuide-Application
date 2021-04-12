@@ -27,6 +27,10 @@ Container Docker disponible ici :
 * RewardCentral : https://hub.docker.com/r/lornmalvo/rewardcentral
 * GpsUtil : https://hub.docker.com/r/lornmalvo/gpsutil
 
+Pour lancer les container en local : 
+
+docker pull lornmalvo/"name"
+
 <h2> Documentation de l'API </h2>
 
 La documentation des endpoints a été générée avec Swagger :
