@@ -24,27 +24,27 @@ public class TourGuideController {
     TourGuideService tourGuideService;
 
     @ApiOperation(value = "Home TourGuide")
-    @RequestMapping("/")
+    @GetMapping("/")
     public String index() {
         return "Greetings from TourGuide!";
     }
 
     @ApiOperation(value = "Request Location of user with username")
-    @RequestMapping("/getLocation")
+    @GetMapping("/getLocation")
     public String getLocation(@RequestParam String userName) {
         VisitedLocation visitedLocation = tourGuideService.getUserLocation(getUser(userName));
         return JsonStream.serialize(visitedLocation.getLocation());
     }
 
     @ApiOperation(value = "Request attractions near the user with username")
-    @RequestMapping("/getNearbyAttractions")
+    @GetMapping("/getNearbyAttractions")
     public String getNearbyAttractions(@RequestParam String userName) {
         tourGuide.model.VisitedLocation visitedLocation = tourGuideService.getUserLocation(getUser(userName));
         return JsonStream.serialize(tourGuideService.getNearByAttractions(visitedLocation));
     }
 
     @ApiOperation(value = "Request get near five attraction with username")
-    @RequestMapping("/getNearFiveAttractions")
+    @GetMapping("/getNearFiveAttractions")
     public List<NearAttractionsDTO> getDistance(@RequestParam String userName) {
         VisitedLocation visitedLocation = tourGuideService.getUserLocation(getUser(userName));
         return tourGuideService.getNearFiveAttractions(visitedLocation, this.getUser(userName));
@@ -52,19 +52,19 @@ public class TourGuideController {
     }
 
     @ApiOperation(value = "Get Rewards by username")
-    @RequestMapping("/getRewards")
+    @GetMapping("/getRewards")
     public List<UserReward> getRewards(@RequestParam String userName) {
         return tourGuideService.getUserRewards(getUser(userName));
     }
 
     @ApiOperation(value = "Get all current locations of all users")
-    @RequestMapping("/getAllCurrentLocations")
+    @GetMapping("/getAllCurrentLocations")
     public List<AllUsersCurrentLocations> getAllCurrentLocations() {
         return tourGuideService.getAllCurrentLocations();
     }
 
     @ApiOperation(value = "Get trip deal with username, tripDuration, number of adults & children")
-    @RequestMapping("/getTripDeals")
+    @GetMapping("/getTripDeals")
     @ResponseBody
     public List<Provider> getTripDeals(@RequestParam(value = "userName") String userName, @RequestParam(value = "tripDuration") int tripDuration, @RequestParam(value = "numberOfAdults") int numberOfAdults, @RequestParam(value = "numberOfChildren") int numberOfChildren) {
         List<Provider> providers = tourGuideService.getTripDeals(getUser(userName), tripDuration, numberOfAdults, numberOfChildren);
