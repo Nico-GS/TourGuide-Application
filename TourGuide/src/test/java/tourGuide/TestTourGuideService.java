@@ -128,7 +128,7 @@ public class TestTourGuideService {
         List<AllUsersCurrentLocations> nearAttractions = tourGuideService.getAllCurrentLocations();
         tourGuideService.tracker.stopTracking();
 
-        assertEquals(100000, nearAttractions.size());
+        assertEquals(100, nearAttractions.size());
     }
 
     @Test

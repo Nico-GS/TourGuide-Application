@@ -46,6 +46,12 @@ public class TourGuideService {
     @Autowired
     TripPricerProxy tripPricerProxy;
 
+    /**
+     * TourGuideService, enable or note test mode and initializing users
+     *
+     * @param gpsUtilProxy   the GpsUtil API
+     * @param rewardsService the RewardsService API
+     */
     public TourGuideService(GpsUtilProxy gpsUtilProxy, RewardsService rewardsService) {
         this.gpsUtilProxy = gpsUtilProxy;
         this.rewardsService = rewardsService;
@@ -60,12 +66,22 @@ public class TourGuideService {
         addShutDownHook();
     }
 
+    /**
+     * Get the user rewards
+     *
+     * @param user the user
+     * @return rewards of the user
+     */
     public List<UserReward> getUserRewards(User user) {
         rewardsService.calculateRewards(user);
         return user.getUserRewards();
     }
 
-
+    /**
+     * Get location of user
+     * @param user the user to locate
+     * @return the location of the user
+     */
     public VisitedLocation getUserLocation(User user) {
         VisitedLocation visitedLocation = (user.getVisitedLocations().size() > 0) ?
                 user.getLastVisitedLocation() :
@@ -73,33 +89,59 @@ public class TourGuideService {
         return visitedLocation;
     }
 
+    /**
+     * Get user
+     * @param userName the user to get
+     * @return the user
+     */
     public User getUser(String userName) {
         return internalUserMap.get(userName);
     }
 
+    /**
+     * Get all users
+     * @return all users
+     */
     public List<User> getAllUsers() {
         return internalUserMap.values().stream().collect(Collectors.toList());
     }
 
+    /**
+     * Add a user
+     * @param user to add
+     */
     public void addUser(User user) {
         if (!internalUserMap.containsKey(user.getUserName())) {
             internalUserMap.put(user.getUserName(), user);
         }
     }
 
+    /**
+     * Get the trip deals, with the username, duration of trip and numbers of adults & children
+     * @param user the user
+     * @param tripDuration the trip duration
+     * @param numberOfAdults the number of adults
+     * @param numberOfChildren the number of children
+     * @return the trip deals
+     */
     public List<Provider> getTripDeals(User user, int tripDuration, int numberOfAdults, int numberOfChildren) {
-        int cumulatativeRewardPoints = user.getUserRewards().stream().mapToInt(i -> i.getRewardPoints()).sum();
+        int rewardCumul = user.getUserRewards().stream().mapToInt(i -> i.getRewardPoints()).sum();
         UserPreferences preferences = new UserPreferences();
         preferences.setTripDuration(tripDuration);
         preferences.setNumberOfAdults(numberOfAdults);
         preferences.setNumberOfChildren(numberOfChildren);
         user.setUserPreferences(preferences);
         List<Provider> providers = tripPricerProxy.getPrice(tripPricerApiKey, user.getUserId(), user.getUserPreferences().getNumberOfAdults(),
-                user.getUserPreferences().getNumberOfChildren(), user.getUserPreferences().getTripDuration(), cumulatativeRewardPoints);
+                user.getUserPreferences().getNumberOfChildren(), user.getUserPreferences().getTripDuration(), rewardCumul);
         user.setTripDeals(providers);
         return providers;
     }
 
+    /**
+     * Track user location and calculate rewards
+     * @param user the user to track
+     * @return the visited location by user
+     */
     public VisitedLocation trackUserLocation(User user) {
         VisitedLocation visitedLocation = gpsUtilProxy.getUserLocation(user.getUserId());
         user.addToVisitedLocations(visitedLocation);
@@ -107,6 +149,10 @@ public class TourGuideService {
         return visitedLocation;
     }
 
+    /**
+     * Track user location with thread
+     * @param user to track
+     */
     public void trackUserLocationWithThread(User user) {
         executorService.execute(new Runnable() {
             public void run() {
@@ -115,12 +161,21 @@ public class TourGuideService {
         });
     }
 
+    /**
+     * Shutdown the tracker
+     * @throws InterruptedException exception
+     */
     public void shutdown() throws InterruptedException {
         executorService.shutdown();
         executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
     }
 
+    /**
+     * Get the near attraction
+     * @param visitedLocation the location visited
+     * @return the near attractions
+     */
     public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {
         List<Attraction> nearbyAttractions = new ArrayList<>();
         for (Attraction attraction : gpsUtilProxy.getAttractions()) {
@@ -132,7 +187,12 @@ public class TourGuideService {
         return nearbyAttractions;
     }
 
-
+    /**
+     * Sort the near attractions
+     * @param visitedLocation the visited location
+     * @param user the user
+     * @return near attractions
+     */
     public List<NearAttractionsDTO> getNeardistance(VisitedLocation visitedLocation, User user) {
         List<NearAttractionsDTO> nearAttractions = new ArrayList<>();
         for (Attraction attraction : gpsUtilProxy.getAttractions()) {
@@ -144,6 +204,12 @@ public class TourGuideService {
         return nearAttractions;
     }
 
+    /**
+     * Get five near attractions of user
+     * @param visitedLocation the visited location
+     * @param user the user
+     * @return five near attractions
+     */
     public List<NearAttractionsDTO> getNearFiveAttractions(VisitedLocation visitedLocation, User user) {
         List<NearAttractionsDTO> nearAttractions = this.getNeardistance(visitedLocation, user);
         List<NearAttractionsDTO> fiveNearAttractions = new ArrayList<>();
@@ -158,6 +224,10 @@ public class TourGuideService {
 
     }
 
+    /**
+     * Get all locations of all users
+     * @return all the locations
+     */
     public List<AllUsersCurrentLocations> getAllCurrentLocations() {
         List<User> users = this.getAllUsers();
         List<AllUsersCurrentLocations> currentLocations = new ArrayList<>();
