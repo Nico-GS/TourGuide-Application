@@ -45,7 +45,7 @@ public class TestPerformance {
     @Test
     public void highVolumeTrackLocation() throws InterruptedException {
         RewardsService rewardsService = new RewardsService(gpsUtilProxy, rewardCentralProxy);
-        InternalTestHelper.setInternalUserNumber(100);
+        InternalTestHelper.setInternalUserNumber(200);
 
         List<User> allUsers = new ArrayList<>();
         allUsers = tourGuideService.getAllUsers();
@@ -67,7 +67,7 @@ public class TestPerformance {
 
     @Test
     public void highVolumeGetRewards() throws InterruptedException {
-        InternalTestHelper.setInternalUserNumber(100);
+        InternalTestHelper.setInternalUserNumber(200);
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         Attraction attraction = gpsUtilProxy.getAttractions().get(0);
